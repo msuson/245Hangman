@@ -89,7 +89,6 @@ public class Hangman {
                         });
                         c.gridy = 6;
                         backPanel.add(backButton, c);
-                        //scoresScreen.add(scoresPanel);
                         scoresScreen.add(backPanel);
                         scoresScreen.setVisible(true);
                         menuScreen.setVisible(false);
@@ -143,32 +142,27 @@ public class Hangman {
     }
     
     private void playGame() {
-        JButton a = new JButton("A");
-        JButton b = new JButton("B");
-        JButton c = new JButton("C");
-        JButton d = new JButton("D");
-        JButton e = new JButton("E");
-        JButton f = new JButton("F");
-        JButton g = new JButton("G");
-        JButton h = new JButton("H");
-        JButton i = new JButton("I");
-        JButton j = new JButton("J");
-        JButton k = new JButton("K");
-        JButton l = new JButton("L");
-        JButton m = new JButton("M");
-        JButton n = new JButton("N");
-        JButton o = new JButton("O");
-        JButton p = new JButton("P");
-        JButton q = new JButton("Q");
-        JButton r = new JButton("R");
-        JButton s = new JButton("S");
-        JButton t = new JButton("T");
-        JButton u = new JButton("U");
-        JButton v = new JButton("V");
-        JButton w = new JButton("W");
-        JButton x = new JButton("X");
-        JButton y = new JButton("Y");
-        JButton z = new JButton("Z");
+        JButton[] letters = new JButton[26];
+        char alphabet = 'A';
+        for(int i = 0; i < letters.length; i++) {
+            letters[i] = new JButton(Character.toString(alphabet++));
+        }
+        JPanel gamePanel = new JPanel(new BorderLayout());
+        JPanel keys = new JPanel(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = (new Insets(1, 1, 1, 1));
+        for(int i = 0; i < 2; i++) {
+            for(int j = 0; j < letters.length/2; j++) {
+                c.gridy = i;
+                if(i == 0)
+                    keys.add(letters[j], c);
+                else
+                    keys.add(letters[j+13], c);
+            }
+        }
+        gamePanel.add(keys, BorderLayout.SOUTH);
+        gameScreen.add(gamePanel);
+        gameScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
 }
