@@ -3,6 +3,7 @@ package hangman;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.util.Random;
 
 public class Hangman {
     
@@ -142,10 +143,26 @@ public class Hangman {
     }
     
     private void playGame() {
+        String[] wordBank = {"ABSTRACT", "CEMETARY", "NURSE", "PHARMACY", "CLIMBING"};
+        String wordToGuess = wordBank[new Random().nextInt(5)];
+        final int[] wrongGuesses = {0};
         JButton[] letters = new JButton[26];
         char alphabet = 'A';
         for(int i = 0; i < letters.length; i++) {
             letters[i] = new JButton(Character.toString(alphabet++));
+            letters[i].addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    if(wrongGuesses[0] < 6) {
+                        String guess = e.getActionCommand();
+                        for(int i = 0; i < wordToGuess.length(); i++) {
+                            if(Character.toString(wordToGuess.charAt(i)).equals(guess))
+                                ((JButton)e.getSource()).setEnabled(false);
+                            else if(i == wordToGuess.length()-1 && ((JButton)e.getSource()).isEnabled())
+                                wrongGuesses[0]++;
+                        }
+                    }
+                }
+            });
         }
         JPanel gamePanel = new JPanel(new BorderLayout());
         JPanel keys = new JPanel(new GridBagLayout());
