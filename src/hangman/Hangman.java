@@ -2,6 +2,11 @@ package hangman;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+//import java.awt.font.TextAttribute;
+//import java.util.Map;
 import javax.swing.*;
 import java.util.Random;
 
@@ -14,7 +19,10 @@ public class Hangman {
     private JFrame scoresScreen;
     private JFrame creditsScreen;
     private JFrame gameScreen;
+    private JFrame endScreen;
     private JButton backButton;
+    private JButton skipButton;
+    final int[] score = {100};
     
     public Hangman() {
         prepareGUI();
@@ -92,6 +100,7 @@ public class Hangman {
                         backPanel.add(backButton, c);
                         scoresScreen.add(backPanel);
                         scoresScreen.setVisible(true);
+                        scoresScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                         menuScreen.setVisible(false);
                     }
                 });
@@ -122,6 +131,7 @@ public class Hangman {
                         backPanel.add(backButton, c);
                         creditsScreen.add(backPanel);
                         creditsScreen.setVisible(true);
+                        creditsScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                         menuScreen.setVisible(false);
                     }
                 });
@@ -143,8 +153,41 @@ public class Hangman {
     }
     
     private void playGame() {
+        JLabel hangmanLabel = new JLabel("HANGMAN");
+        JLabel dateTime = new JLabel();
+        final DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy  HH:mm:ss");
+        Timer timer = new Timer(1000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Calendar now = Calendar.getInstance();
+                dateTime.setText(dateFormat.format(now.getTime()));
+            }
+        });
+        timer.start();
+        
         String[] wordBank = {"ABSTRACT", "CEMETARY", "NURSE", "PHARMACY", "CLIMBING"};
         String wordToGuess = wordBank[new Random().nextInt(5)];
+        
+        skipButton = new JButton("Skip");
+        skipButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                score[0] = 0;
+                endGame();
+            }
+        });
+        
+        JPanel blankPanel = new JPanel();
+        JLabel[] blankSpace = new JLabel[wordToGuess.length()];
+        for(int i = 0; i < blankSpace.length; i++) {
+            blankSpace[i] = new JLabel(" __ ");
+            blankSpace[i].setFont(new Font(blankSpace[i].getFont().getFontName(), Font.BOLD, 28));
+            blankPanel.add(blankSpace[i]);
+        }
+        
+        JPanel scorePanel = new JPanel();
+        scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
+        JLabel scoreLabel = new JLabel("Score: " + Integer.toString(score[0]));
+        
+        final int[] correctGuesses = {0};
         final int[] wrongGuesses = {0};
         JButton[] letters = new JButton[26];
         char alphabet = 'A';
@@ -152,18 +195,30 @@ public class Hangman {
             letters[i] = new JButton(Character.toString(alphabet++));
             letters[i].addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    if(wrongGuesses[0] < 6) {
+                    if(wrongGuesses[0] < 6 && correctGuesses[0] < wordToGuess.length()) {
                         String guess = e.getActionCommand();
                         for(int i = 0; i < wordToGuess.length(); i++) {
-                            if(Character.toString(wordToGuess.charAt(i)).equals(guess))
+                            String currentLetter = Character.toString(wordToGuess.charAt(i));
+                            if(currentLetter.equals(guess)) {
+                                correctGuesses[0]++;
+                                blankSpace[i].setText("  " + guess + "  ");
+                                blankSpace[i].setFont(new Font(blankSpace[i].getFont().getFontName(), Font.BOLD, 28));
                                 ((JButton)e.getSource()).setEnabled(false);
-                            else if(i == wordToGuess.length()-1 && ((JButton)e.getSource()).isEnabled())
+                            }
+                            else if(i == wordToGuess.length()-1 && ((JButton)e.getSource()).isEnabled()) {
                                 wrongGuesses[0]++;
+                                score[0] -= 10;
+                                scoreLabel.setText("Score: " + Integer.toString(score[0]));
+                                ((JButton)e.getSource()).setEnabled(false);
+                            }
                         }
                     }
+                    if(correctGuesses[0] == wordToGuess.length() || wrongGuesses[0] == 6)
+                        endGame();
                 }
             });
         }
+        
         JPanel gamePanel = new JPanel(new BorderLayout());
         JPanel keys = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
@@ -177,9 +232,53 @@ public class Hangman {
                     keys.add(letters[j+13], c);
             }
         }
+        JPanel testPanel = new JPanel(new BorderLayout());
+        scorePanel.add(dateTime);
+        scorePanel.add(scoreLabel);
+        scorePanel.add(skipButton);
+        testPanel.add(hangmanLabel, BorderLayout.WEST);
+        testPanel.add(scorePanel, BorderLayout.EAST);
+        gamePanel.add(testPanel, BorderLayout.NORTH);
+        gamePanel.add(blankPanel, BorderLayout.CENTER);
         gamePanel.add(keys, BorderLayout.SOUTH);
         gameScreen.add(gamePanel);
         gameScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+    
+    public void endGame() {
+        Timer endDelay = new Timer(1000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                gameScreen.setVisible(false);
+                endScreen = new JFrame();
+                endScreen.setSize(WIDTH, HEIGHT);
+                endScreen.setLocationRelativeTo(null);
+                JPanel endPanel = new JPanel(new GridBagLayout());
+                GridBagConstraints c1 = new GridBagConstraints();
+                JLabel scoreTitle = new JLabel("SCORE");
+                c1.gridy = 0;
+                endPanel.add(scoreTitle, c1);
+                c1.gridy = 1;
+                JLabel endScore = new JLabel(Integer.toString(score[0]));
+                endPanel.add(endScore, c1);
+                c1.gridy = 2;
+                JButton endButton = new JButton("End");
+                endPanel.add(endButton, c1);
+                endScreen.add(endPanel);
+                endScreen.setVisible(true);
+                endScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                endButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        gameScreen.dispose();
+                        endScreen.setVisible(false);
+                        endScreen.dispose();
+                        menuScreen.setVisible(true);
+                        score[0] = 100;
+                    }
+                });
+            }
+        });
+        endDelay.setRepeats(false);
+        endDelay.start();
     }
     
 }
