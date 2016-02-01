@@ -1,3 +1,16 @@
+/*****************************************************************
+ * file: Hangman.java
+ * author: Marco Suson, Isolde Alfaro
+ * class: CS 245 - Programming Graphical User Interfaces
+ * 
+ * assignment: Quarter Project Checkpoint V.1.0
+ * date last modified: 1/31/16
+ * 
+ * purpose: An introductory program to demonstrate GUI programming
+ * through the implementation of a simple point and click game.
+ * 
+ *****************************************************************/
+
 package hangman;
 
 import java.awt.*;
@@ -5,8 +18,6 @@ import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-//import java.awt.font.TextAttribute;
-//import java.util.Map;
 import javax.swing.*;
 import java.util.Random;
 
@@ -24,21 +35,33 @@ public class Hangman {
     private JButton skipButton;
     final int[] score = {100};
     
+    //method: Hangman
+    //purpose: constructor for the Hangman class.
     public Hangman() {
         prepareGUI();
     }
 
+    //method: main
+    //purpose: start up the UI so the user can play the game.
     public static void main(String[] args) {
         Hangman newGame = new Hangman();
     }
     
+    //method: prepareGUI
+    //purpose: this method prepares the various UI components that
+    //need to be displayed throughout the game.
     private void prepareGUI() {
         startScreen = new JFrame();
         startScreen.setSize(WIDTH, HEIGHT);
         startScreen.setLocationRelativeTo(null);
         JPanel introPanel = new JPanel(new BorderLayout());
+        introPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
         JLabel title = new JLabel("CS 245 Quarter Project");
+        title.setHorizontalAlignment(JLabel.CENTER);
+        title.setFont(new Font(title.getFont().getFontName(), Font.BOLD, 35));
         JLabel author = new JLabel("A Savage Sloth Production");
+        author.setHorizontalAlignment(JLabel.CENTER);
+        author.setFont(new Font(author.getFont().getFontName(), Font.BOLD, 18));
         introPanel.add(title, BorderLayout.NORTH);
         introPanel.add(author, BorderLayout.SOUTH);
         startScreen.add(introPanel);
@@ -51,7 +74,7 @@ public class Hangman {
                 menuScreen = new JFrame();
                 menuScreen.setSize(WIDTH, HEIGHT);
                 menuScreen.setLocationRelativeTo(null);
-                JPanel p = new JPanel(new GridBagLayout());
+                JPanel p = new JPanel(new GridLayout(3, 1, 1, 5));
                 backButton = new JButton("Back");
                 JButton playButton = new JButton("Play");
                 playButton.addActionListener(new ActionListener() {
@@ -70,34 +93,44 @@ public class Hangman {
                         scoresScreen = new JFrame();
                         scoresScreen.setSize(WIDTH, HEIGHT);
                         scoresScreen.setLocationRelativeTo(null);
-                        JPanel backPanel = new JPanel(new GridBagLayout());
+                        JPanel highScores = new JPanel(new GridBagLayout());
                         GridBagConstraints c = new GridBagConstraints();
+                        JPanel backPanel = new JPanel(new BorderLayout());
                         JLabel title = new JLabel("HIGHSCORES");
+                        title.setHorizontalAlignment(JLabel.CENTER);
+                        title.setFont(new Font(title.getFont().getFontName(), Font.BOLD, 28));
+                        backPanel.add(title, BorderLayout.NORTH);
                         JLabel score1 = new JLabel("ABC.....00000");
+                        score1.setFont(new Font(score1.getFont().getFontName(), Font.BOLD, 18));
                         JLabel score2 = new JLabel("ABC.....00000");
+                        score2.setFont(new Font(score2.getFont().getFontName(), Font.BOLD, 18));
                         JLabel score3 = new JLabel("ABC.....00000");
+                        score3.setFont(new Font(score3.getFont().getFontName(), Font.BOLD, 18));
                         JLabel score4 = new JLabel("ABC.....00000");
+                        score4.setFont(new Font(score4.getFont().getFontName(), Font.BOLD, 18));
                         JLabel score5 = new JLabel("ABC.....00000");
-                        c.gridy = 0;
-                        backPanel.add(title, c);
+                        score5.setFont(new Font(score5.getFont().getFontName(), Font.BOLD, 18));
                         c.gridy = 1;
-                        backPanel.add(score1, c);
+                        highScores.add(score1, c);
                         c.gridy = 2;
-                        backPanel.add(score2, c);
+                        highScores.add(score2, c);
                         c.gridy = 3;
-                        backPanel.add(score3, c);
+                        highScores.add(score3, c);
                         c.gridy = 4;
-                        backPanel.add(score4, c);
+                        highScores.add(score4, c);
                         c.gridy = 5;
-                        backPanel.add(score5, c);
+                        highScores.add(score5, c);
                         backButton.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
                                 scoresScreen.setVisible(false);
                                 menuScreen.setVisible(true);
                             }
                         });
-                        c.gridy = 6;
-                        backPanel.add(backButton, c);
+                        JPanel backButtonPanel = new JPanel(new GridBagLayout());
+                        backButtonPanel.add(backButton);
+                        backPanel.add(backButtonPanel, BorderLayout.SOUTH);
+                        backPanel.add(highScores, BorderLayout.CENTER);
+                        backPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
                         scoresScreen.add(backPanel);
                         scoresScreen.setVisible(true);
                         scoresScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -110,40 +143,50 @@ public class Hangman {
                         creditsScreen = new JFrame();
                         creditsScreen.setSize(WIDTH, HEIGHT);
                         creditsScreen.setLocationRelativeTo(null);
-                        JPanel backPanel = new JPanel(new GridBagLayout());
+                        JPanel authorsPanel = new JPanel(new GridBagLayout());
                         GridBagConstraints c = new GridBagConstraints();
+                        JPanel backPanel = new JPanel(new BorderLayout());
                         JLabel title = new JLabel("CREDITS");
+                        title.setHorizontalAlignment(JLabel.CENTER);
+                        title.setFont(new Font(title.getFont().getFontName(), Font.BOLD, 28));
                         JLabel isolde = new JLabel("Isolde Alfaro, 009624719");
+                        isolde.setFont(new Font(isolde.getFont().getFontName(), Font.BOLD, 18));
                         JLabel marco = new JLabel("Marco Suson, 009532432");
+                        marco.setFont(new Font(marco.getFont().getFontName(), Font.BOLD, 18));
                         backButton.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
                                 creditsScreen.setVisible(false);
                                 menuScreen.setVisible(true);
                             }
                         });
+                        backPanel.add(title, BorderLayout.NORTH);
                         c.gridy = 1;
-                        backPanel.add(title, c);
+                        authorsPanel.add(isolde, c);
                         c.gridy = 2;
-                        backPanel.add(isolde, c);
-                        c.gridy = 3;
-                        backPanel.add(marco, c);
-                        c.gridy = 4;
-                        backPanel.add(backButton, c);
+                        authorsPanel.add(marco, c);
+                        backPanel.add(authorsPanel, BorderLayout.CENTER);
+                        JPanel backButtonPanel = new JPanel(new GridBagLayout());
+                        backButtonPanel.add(backButton);
+                        backPanel.add(backButtonPanel, BorderLayout.SOUTH);
+                        backPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
                         creditsScreen.add(backPanel);
                         creditsScreen.setVisible(true);
                         creditsScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                         menuScreen.setVisible(false);
                     }
                 });
-                GridBagConstraints c = new GridBagConstraints();
-                c.insets = new Insets(5, 5, 5, 5);
-                c.gridy = 1;
-                p.add(playButton, c);
-                c.gridy = 2;
-                p.add(highScoresButton, c);
-                c.gridy = 3;
-                p.add(creditsButton, c);
-                menuScreen.add(p);
+                p.add(playButton);
+                p.add(highScoresButton);
+                p.add(creditsButton);
+                JPanel buttonsPanel = new JPanel(new BorderLayout());
+                buttonsPanel.add(p, BorderLayout.EAST);
+                ImageIcon graphic = new ImageIcon(getClass().getResource("sloth.jpg"));
+                JLabel image = new JLabel(graphic);
+                JPanel formPane = new JPanel(new BorderLayout());
+                formPane.add(image, BorderLayout.CENTER);
+                formPane.add(buttonsPanel, BorderLayout.SOUTH);
+                formPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                menuScreen.add(formPane);
                 menuScreen.setVisible(true);
                 menuScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             }
@@ -152,6 +195,9 @@ public class Hangman {
         timer.start();
     }
     
+    //method: playGame
+    //purpose: this method prepares and displays the UI components that need
+    //to be shown while the game is ongoing.
     private void playGame() {
         JLabel hangmanLabel = new JLabel("HANGMAN");
         JLabel dateTime = new JLabel();
@@ -189,6 +235,15 @@ public class Hangman {
         
         final int[] correctGuesses = {0};
         final int[] wrongGuesses = {0};
+        final ImageIcon[] graphics = {new ImageIcon(getClass().getResource("Guillotine.png")),
+                                      new ImageIcon(getClass().getResource("Head.png")),
+                                      new ImageIcon(getClass().getResource("Body.png")),
+                                      new ImageIcon(getClass().getResource("RightArm.png")),
+                                      new ImageIcon(getClass().getResource("LeftArm.png")),
+                                      new ImageIcon(getClass().getResource("RightLeg.png")),
+                                      new ImageIcon(getClass().getResource("LeftLeg.png"))};
+        ImageIcon graphic = graphics[wrongGuesses[0]];
+        JLabel hangmanGraphic = new JLabel(graphic);
         JButton[] letters = new JButton[26];
         char alphabet = 'A';
         for(int i = 0; i < letters.length; i++) {
@@ -202,11 +257,11 @@ public class Hangman {
                             if(currentLetter.equals(guess)) {
                                 correctGuesses[0]++;
                                 blankSpace[i].setText("  " + guess + "  ");
-                                blankSpace[i].setFont(new Font(blankSpace[i].getFont().getFontName(), Font.BOLD, 28));
+                                blankSpace[i].setFont(new Font(blankSpace[i].getFont().getFontName(), Font.BOLD, 20));
                                 ((JButton)e.getSource()).setEnabled(false);
                             }
                             else if(i == wordToGuess.length()-1 && ((JButton)e.getSource()).isEnabled()) {
-                                wrongGuesses[0]++;
+                                hangmanGraphic.setIcon(graphics[++wrongGuesses[0]]);
                                 score[0] -= 10;
                                 scoreLabel.setText("Score: " + Integer.toString(score[0]));
                                 ((JButton)e.getSource()).setEnabled(false);
@@ -232,19 +287,29 @@ public class Hangman {
                     keys.add(letters[j+13], c);
             }
         }
-        JPanel testPanel = new JPanel(new BorderLayout());
+        JPanel graphicsPanel = new JPanel();
+        graphicsPanel.setLayout(new BoxLayout(graphicsPanel, BoxLayout.Y_AXIS));
+        JPanel hangGraphicPane = new JPanel();
+        hangGraphicPane.add(hangmanGraphic);
+        graphicsPanel.add(hangGraphicPane);
+        graphicsPanel.add(blankPanel);
+        JPanel topBarPanel = new JPanel(new BorderLayout());
         scorePanel.add(dateTime);
         scorePanel.add(scoreLabel);
         scorePanel.add(skipButton);
-        testPanel.add(hangmanLabel, BorderLayout.WEST);
-        testPanel.add(scorePanel, BorderLayout.EAST);
-        gamePanel.add(testPanel, BorderLayout.NORTH);
-        gamePanel.add(blankPanel, BorderLayout.CENTER);
+        topBarPanel.add(hangmanLabel, BorderLayout.WEST);
+        topBarPanel.add(scorePanel, BorderLayout.EAST);
+        topBarPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        gamePanel.add(topBarPanel, BorderLayout.NORTH);
+        gamePanel.add(graphicsPanel, BorderLayout.CENTER);
         gamePanel.add(keys, BorderLayout.SOUTH);
         gameScreen.add(gamePanel);
         gameScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
+    //method: endGame
+    //purpose: this method prepares and displays the screen that is
+    //shown to the player when they finish the game.
     public void endGame() {
         Timer endDelay = new Timer(1000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -252,17 +317,22 @@ public class Hangman {
                 endScreen = new JFrame();
                 endScreen.setSize(WIDTH, HEIGHT);
                 endScreen.setLocationRelativeTo(null);
-                JPanel endPanel = new JPanel(new GridBagLayout());
+                JPanel endPanel = new JPanel(new BorderLayout());
+                JPanel scorePanel = new JPanel(new GridBagLayout());
                 GridBagConstraints c1 = new GridBagConstraints();
                 JLabel scoreTitle = new JLabel("SCORE");
-                c1.gridy = 0;
-                endPanel.add(scoreTitle, c1);
-                c1.gridy = 1;
+                scoreTitle.setHorizontalAlignment(JLabel.CENTER);
+                scoreTitle.setFont(new Font(scoreTitle.getFont().getFontName(), Font.BOLD, 35));
+                endPanel.add(scoreTitle, BorderLayout.NORTH);
                 JLabel endScore = new JLabel(Integer.toString(score[0]));
-                endPanel.add(endScore, c1);
-                c1.gridy = 2;
+                endScore.setFont(new Font(endScore.getFont().getFontName(), Font.BOLD, 24));
+                scorePanel.add(endScore);
+                endPanel.add(scorePanel, BorderLayout.CENTER);
                 JButton endButton = new JButton("End");
-                endPanel.add(endButton, c1);
+                JPanel endButtonPanel = new JPanel(new GridBagLayout());
+                endButtonPanel.add(endButton);
+                endPanel.add(endButtonPanel, BorderLayout.SOUTH);
+                endPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
                 endScreen.add(endPanel);
                 endScreen.setVisible(true);
                 endScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
