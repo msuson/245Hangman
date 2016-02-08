@@ -1,10 +1,11 @@
 /*****************************************************************
+ * 
  * file: Hangman.java
  * author: Marco Suson, Isolde Alfaro
  * class: CS 245 - Programming Graphical User Interfaces
  * 
  * assignment: Quarter Project Checkpoint V.1.0
- * date last modified: 1/31/16
+ * date last modified: 2/7/16
  * 
  * purpose: An introductory program to demonstrate GUI programming
  * through the implementation of a simple point and click game.
@@ -30,6 +31,7 @@ public class Hangman {
     private JFrame scoresScreen;
     private JFrame creditsScreen;
     private JFrame gameScreen;
+    private JFrame colorGameScreen;
     private JFrame endScreen;
     private JButton backButton;
     private JButton skipButton;
@@ -217,7 +219,7 @@ public class Hangman {
         skipButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 score[0] = 0;
-                endGame();
+                playColors();
             }
         });
         
@@ -268,8 +270,10 @@ public class Hangman {
                             }
                         }
                     }
-                    if(correctGuesses[0] == wordToGuess.length() || wrongGuesses[0] == 6)
-                        endGame();
+                    if(correctGuesses[0] == wordToGuess.length() || wrongGuesses[0] == 6) {
+                        gameScreen.setVisible(false);
+                        playColors();
+                    }
                 }
             });
         }
@@ -305,6 +309,100 @@ public class Hangman {
         gamePanel.add(keys, BorderLayout.SOUTH);
         gameScreen.add(gamePanel);
         gameScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+    
+    public void playColors() {
+        colorGameScreen = new JFrame();
+        colorGameScreen.setSize(WIDTH, HEIGHT);
+        colorGameScreen.setLocationRelativeTo(null);
+        final int[] round = {0};
+        final ImageIcon[] colors =
+            {new ImageIcon(getClass().getResource("Red_Button.png")),
+             new ImageIcon(getClass().getResource("Yellow_Button.png")),
+             new ImageIcon(getClass().getResource("Green_Button.png")),
+             new ImageIcon(getClass().getResource("Blue_Button.png")),
+             new ImageIcon(getClass().getResource("Purple_Button.png"))};
+        final String[] buttonAction = {"RED", "YELLOW", "GREEN", "BLUE", "PURPLE"};
+        final boolean[] picked = new boolean[5];
+        final JButton[] button = {new JButton(), new JButton(), new JButton(), new JButton(), new JButton()};
+        setColorButtons(button, colors, buttonAction, picked);
+        for(int i = 0; i < button.length; i++) {
+            button[i].addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if(round[0]++ < 5) {
+                        System.out.println(((JButton)e.getSource()).getActionCommand());
+                        setColorButtons(button, colors, buttonAction, picked);
+                    }
+                    if(round[0] == 5) {
+                        colorGameScreen.setVisible(false);
+                        endGame();
+                    }
+                }
+            });
+        }
+        JLabel dateTime = new JLabel();
+        final DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy  HH:mm:ss");
+        Timer timer = new Timer(1000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Calendar now = Calendar.getInstance();
+                dateTime.setText(dateFormat.format(now.getTime()));
+            }
+        });
+        timer.start();
+        JPanel scorePanel = new JPanel();
+        scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
+        JLabel scoreLabel = new JLabel("Score: " + score[0]);
+        scorePanel.add(dateTime);
+        scorePanel.add(scoreLabel);
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(scorePanel, BorderLayout.EAST);
+        JPanel contents = new JPanel(new BorderLayout());
+        JPanel center = new JPanel();
+        center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
+        JPanel textPanel = new JPanel();
+        JLabel text = new JLabel("COLOR");
+        textPanel.add(text);
+        textPanel.setBorder(BorderFactory.createEmptyBorder(0,25,0,0));
+        topPanel.add(textPanel, BorderLayout.CENTER);
+        JPanel centerButtonPanel = new JPanel(new GridBagLayout());
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(button[1], BorderLayout.NORTH);
+        leftPanel.add(button[2], BorderLayout.SOUTH);
+        leftPanel.setBorder(BorderFactory.createEmptyBorder(15,45,15,15));
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.add(button[3], BorderLayout.NORTH);
+        rightPanel.add(button[4], BorderLayout.SOUTH);
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(15,15,15,45));
+        centerButtonPanel.add(button[0]);
+        center.add(centerButtonPanel);
+        contents.add(center, BorderLayout.CENTER);
+        contents.add(topPanel, BorderLayout.NORTH);
+        contents.add(leftPanel, BorderLayout.WEST);
+        contents.add(rightPanel, BorderLayout.EAST);
+        colorGameScreen.add(contents);
+        colorGameScreen.setVisible(true);
+        colorGameScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+    
+    public void setColorButtons(JButton[] buttons, ImageIcon[] icons, String[] actions, boolean[] chosen) {
+        Random rand = new Random();
+        int index = rand.nextInt(5);
+        for(int i = 0; i < buttons.length; i++) {
+            buttons[i].setIcon(icons[index]);
+            buttons[i].setActionCommand(actions[index]);
+            buttons[index].setBorder(BorderFactory.createEmptyBorder());
+            buttons[index].setContentAreaFilled(false);
+            chosen[index] = true;
+            if(i < buttons.length-1) {
+                while(chosen[index]) {
+                    index = rand.nextInt(buttons.length);
+                }
+            }
+        }
+        for(int i = 0; i < chosen.length; i++) {
+            chosen[i] = false;
+        }
     }
     
     //method: endGame
