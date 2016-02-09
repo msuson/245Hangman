@@ -311,28 +311,42 @@ public class Hangman {
         gameScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
+    //method: playColors
+    //purpose: this method prepares and displays the screen that is
+    //shown to the player when they play the color game.
     public void playColors() {
         colorGameScreen = new JFrame();
         colorGameScreen.setSize(WIDTH, HEIGHT);
         colorGameScreen.setLocationRelativeTo(null);
         final int[] round = {0};
-        final ImageIcon[] colors =
+        final ImageIcon[] colorImg =
             {new ImageIcon(getClass().getResource("Red_Button.png")),
              new ImageIcon(getClass().getResource("Yellow_Button.png")),
              new ImageIcon(getClass().getResource("Green_Button.png")),
              new ImageIcon(getClass().getResource("Blue_Button.png")),
              new ImageIcon(getClass().getResource("Purple_Button.png"))};
         final String[] buttonAction = {"RED", "YELLOW", "GREEN", "BLUE", "PURPLE"};
+        final Color[] colors = {Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE, new Color(128,0,255)};
+        Random r = new Random();
+        JLabel text = new JLabel(buttonAction[r.nextInt(colors.length)]);
+        text.setFont(new Font(text.getFont().getFontName(), Font.BOLD, 28));
+        final int[] correctAns  = {r.nextInt(colors.length)};
+        text.setForeground(colors[correctAns[0]]);
+        JLabel scoreLabel = new JLabel("Score: " + score[0]);
         final boolean[] picked = new boolean[5];
         final JButton[] button = {new JButton(), new JButton(), new JButton(), new JButton(), new JButton()};
-        setColorButtons(button, colors, buttonAction, picked);
+        setColorButtons(button, colorImg, buttonAction, picked);
         for(int i = 0; i < button.length; i++) {
             button[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if(round[0]++ < 5) {
-                        System.out.println(((JButton)e.getSource()).getActionCommand());
-                        setColorButtons(button, colors, buttonAction, picked);
+                        if(((JButton)e.getSource()).getActionCommand().equals(buttonAction[correctAns[0]]))
+                            scoreLabel.setText("Score: " + (score[0] += 100));
+                        correctAns[0] = r.nextInt(colors.length);
+                        setColorButtons(button, colorImg, buttonAction, picked);
+                        text.setText(buttonAction[r.nextInt(colors.length)]);
+                        text.setForeground(colors[correctAns[0]]);
                     }
                     if(round[0] == 5) {
                         colorGameScreen.setVisible(false);
@@ -352,7 +366,6 @@ public class Hangman {
         timer.start();
         JPanel scorePanel = new JPanel();
         scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
-        JLabel scoreLabel = new JLabel("Score: " + score[0]);
         scorePanel.add(dateTime);
         scorePanel.add(scoreLabel);
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -361,9 +374,8 @@ public class Hangman {
         JPanel center = new JPanel();
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
         JPanel textPanel = new JPanel();
-        JLabel text = new JLabel("COLOR");
         textPanel.add(text);
-        textPanel.setBorder(BorderFactory.createEmptyBorder(0,25,0,0));
+        textPanel.setBorder(BorderFactory.createEmptyBorder(0,125,0,0));
         topPanel.add(textPanel, BorderLayout.CENTER);
         JPanel centerButtonPanel = new JPanel(new GridBagLayout());
         JPanel leftPanel = new JPanel(new BorderLayout());
@@ -385,6 +397,9 @@ public class Hangman {
         colorGameScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
+    //method: setColorButtons
+    //purpose: this method randomly changes the colors of each
+    //button on the screen for the color game.
     public void setColorButtons(JButton[] buttons, ImageIcon[] icons, String[] actions, boolean[] chosen) {
         Random rand = new Random();
         int index = rand.nextInt(5);
