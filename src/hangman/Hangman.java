@@ -5,7 +5,7 @@
  * class: CS 245 - Programming Graphical User Interfaces
  * 
  * assignment: Quarter Project Checkpoint V.1.0
- * date last modified: 2/7/16
+ * date last modified: 2/9/16
  * 
  * purpose: An introductory program to demonstrate GUI programming
  * through the implementation of a simple point and click game.
@@ -325,17 +325,27 @@ public class Hangman {
              new ImageIcon(getClass().getResource("Green_Button.png")),
              new ImageIcon(getClass().getResource("Blue_Button.png")),
              new ImageIcon(getClass().getResource("Purple_Button.png"))};
+        final ImageIcon[] mouseOverImg =
+            {new ImageIcon(getClass().getResource("Red_Button_Mouseover.png")),
+             new ImageIcon(getClass().getResource("Yellow_Button_Mouseover.png")),
+             new ImageIcon(getClass().getResource("Green_Button_Mouseover.png")),
+             new ImageIcon(getClass().getResource("Blue_Button_Mouseover.png")),
+             new ImageIcon(getClass().getResource("Purple_Button_Mouseover.png")),
+            };
         final String[] buttonAction = {"RED", "YELLOW", "GREEN", "BLUE", "PURPLE"};
         final Color[] colors = {Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE, new Color(128,0,255)};
         Random r = new Random();
         JLabel text = new JLabel(buttonAction[r.nextInt(colors.length)]);
         text.setFont(new Font(text.getFont().getFontName(), Font.BOLD, 28));
         final int[] correctAns  = {r.nextInt(colors.length)};
+        while(text.getText().equals(buttonAction[correctAns[0]])) {
+            correctAns[0] = r.nextInt(colors.length);
+        }
         text.setForeground(colors[correctAns[0]]);
         JLabel scoreLabel = new JLabel("Score: " + score[0]);
         final boolean[] picked = new boolean[5];
         final JButton[] button = {new JButton(), new JButton(), new JButton(), new JButton(), new JButton()};
-        setColorButtons(button, colorImg, buttonAction, picked);
+        setColorButtons(button, colorImg, mouseOverImg, buttonAction, picked);
         for(int i = 0; i < button.length; i++) {
             button[i].addActionListener(new ActionListener() {
                 @Override
@@ -344,8 +354,11 @@ public class Hangman {
                         if(((JButton)e.getSource()).getActionCommand().equals(buttonAction[correctAns[0]]))
                             scoreLabel.setText("Score: " + (score[0] += 100));
                         correctAns[0] = r.nextInt(colors.length);
-                        setColorButtons(button, colorImg, buttonAction, picked);
+                        setColorButtons(button, colorImg, mouseOverImg, buttonAction, picked);
                         text.setText(buttonAction[r.nextInt(colors.length)]);
+                        while(text.getText().equals(buttonAction[correctAns[0]])) {
+                            correctAns[0] = r.nextInt(colors.length);
+                        }
                         text.setForeground(colors[correctAns[0]]);
                     }
                     if(round[0] == 5) {
@@ -400,12 +413,13 @@ public class Hangman {
     //method: setColorButtons
     //purpose: this method randomly changes the colors of each
     //button on the screen for the color game.
-    public void setColorButtons(JButton[] buttons, ImageIcon[] icons, String[] actions, boolean[] chosen) {
+    public void setColorButtons(JButton[] buttons, ImageIcon[] icons, ImageIcon[] moIcons, String[] actions, boolean[] chosen) {
         Random rand = new Random();
         int index = rand.nextInt(5);
         for(int i = 0; i < buttons.length; i++) {
             buttons[i].setIcon(icons[index]);
             buttons[i].setActionCommand(actions[index]);
+            buttons[i].setRolloverIcon(moIcons[index]);
             buttons[index].setBorder(BorderFactory.createEmptyBorder());
             buttons[index].setContentAreaFilled(false);
             chosen[index] = true;
