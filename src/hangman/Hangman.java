@@ -5,7 +5,7 @@
  * class: CS 245 - Programming Graphical User Interfaces
  * 
  * assignment: Quarter Project Checkpoint V.1.0
- * date last modified: 2/9/16
+ * date last modified: 2/14/16
  * 
  * purpose: An introductory program to demonstrate GUI programming
  * through the implementation of a simple point and click game.
@@ -219,6 +219,8 @@ public class Hangman {
         skipButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 score[0] = 0;
+                gameScreen.setVisible(false);
+                gameScreen.dispose();
                 playColors();
             }
         });
@@ -272,6 +274,7 @@ public class Hangman {
                     }
                     if(correctGuesses[0] == wordToGuess.length() || wrongGuesses[0] == 6) {
                         gameScreen.setVisible(false);
+                        gameScreen.dispose();
                         playColors();
                     }
                 }
@@ -363,6 +366,7 @@ public class Hangman {
                     }
                     if(round[0] == 5) {
                         colorGameScreen.setVisible(false);
+                        colorGameScreen.dispose();
                         endGame();
                     }
                 }
